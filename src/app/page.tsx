@@ -90,7 +90,7 @@ export default function Home() {
         />
         <button
           type="button"
-          className=" bg-stone-900 rounded-xl p-2 border border-gray-300 hover:bg-stone-900"
+          className=" bg-stone-900 rounded-xl p-2 border border-gray-300 hover:bg-green-800"
           onClick={() => search()}
         >
           Search
