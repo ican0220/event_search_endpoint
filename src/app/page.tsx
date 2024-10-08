@@ -1,101 +1,99 @@
-import Image from "next/image";
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Autocomplete from "./components/AutoComplete";
+import Input from "./components/Input";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  // const [location, setLocation] = useState();
+  const [distance, setDistance] = useState<string>();
+  const [inputValue, setInputValue] = useState<string>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [searchValue, setSearchValue] = useState<any>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [filteredOptions, setFilteredOptions] = useState<Array<any>>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const fetchCities = async () => {
+    try {
+      console.log("ok");
+      const response = await axios.get(
+        `https://maps.googleapis.com/maps/api/geocode/json`,
+        {
+          params: {
+            address: inputValue,
+            key: "AIzaSyD5SWtYvepl_a7bHPs9S2dUSCYVF6Whgmg",
+          },
+        }
+      );
+
+      if (response.data.status === "OK") {
+        const _locations = response.data.results;
+        setFilteredOptions(_locations);
+      } else {
+        setFilteredOptions([]);
+        throw new Error("Error fetching cities");
+      }
+    } catch (err) {
+      console.log(err);
+      setFilteredOptions([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchCities();
+  }, [inputValue]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const search = async() => {
+ console.log(distance, searchValue, 'ossk')
+    if(distance && searchValue){
+
+      const payload = {
+        location: searchValue.geometry.location,
+        distance: distance
+      };
+
+      const response = await fetch("/api/events", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (response.status === 200) {
+        const {  } = await response.json();
+
+      } else {
+        console.log("error");
+      }
+    }
+  };
+
+  return (
+    <main className="flex flex-col items-center p-10 gap-5">
+      <h1>Hello, this is Event Search Endpoint Project.</h1>
+      <div className="flex justify-center items-center gap-4">
+        <Autocomplete
+          options={filteredOptions}
+          inputVal={inputValue}
+          setInputValue={(v: string) => setInputValue(v)}
+          value={searchValue}
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          setValue={(item: any) => setSearchValue(item)}
+        />
+        <Input
+          type="text"
+          className="rounded-lg p-2 bg-stone-900 border border-gray-300"
+          placeHolder="Type distance..."
+          value={distance}
+          onChange={(d: string) => setDistance(d)}
+        />
+        <button
+          type="button"
+          className=" bg-stone-900 rounded-xl p-2 border border-gray-300 hover:bg-stone-900"
+          onClick={() => search()}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          Search
+        </button>
+      </div>
+    </main>
   );
 }
