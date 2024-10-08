@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useState, useEffect } from "react";
@@ -9,10 +10,10 @@ export default function Home() {
   // const [location, setLocation] = useState();
   const [distance, setDistance] = useState<string>();
   const [inputValue, setInputValue] = useState<string>();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [searchValue, setSearchValue] = useState<any>();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [filteredOptions, setFilteredOptions] = useState<Array<any>>([]);
+
+  const [events, setEvents] = useState<Array<any>>([]);
 
   const fetchCities = async () => {
     try {
@@ -46,7 +47,6 @@ export default function Home() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const search = async() => {
- console.log(distance, searchValue, 'ossk')
     if(distance && searchValue){
 
       const payload = {
@@ -59,7 +59,9 @@ export default function Home() {
         body: JSON.stringify(payload),
       });
       if (response.status === 200) {
-        const {  } = await response.json();
+        const data = await response.json();
+        const _data  = await JSON.parse(data.message);
+        setEvents([..._data]);
 
       } else {
         console.log("error");
@@ -93,6 +95,11 @@ export default function Home() {
         >
           Search
         </button>
+      </div>
+      <div>
+        {events.map((e: any, index: number) => (
+          <div key={index}><span>{index + 1}.</span>{e.full_name}</div>
+        ))}
       </div>
     </main>
   );
