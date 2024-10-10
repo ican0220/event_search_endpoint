@@ -1,14 +1,16 @@
-/* eslint-disable prefer-const */
-// lib/mongodb.ts
-import { MongoClient } from "mongodb";
+import mongoose from 'mongoose';
 
-const uri = process.env.MONGODB_URI as string; // Store your MongoDB URI in an environment variable
-const options = {};
+   const MONGODB_URI = process.env.MONGODB_URI || 'your_mongodb_connection_string';
 
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
+   if (!MONGODB_URI) {
+     throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
+   }
 
-client = new MongoClient(uri, options);
-clientPromise = client.connect();
+   async function dbConnect() {
+     if (mongoose.connection.readyState === 0) {
+       await mongoose.connect(MONGODB_URI);
+     }
+     return mongoose.connection;
+   }
 
-export default clientPromise;
+   export default dbConnect;

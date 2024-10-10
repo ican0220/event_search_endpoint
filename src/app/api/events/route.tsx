@@ -1,8 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
 import { NextResponse } from "next/server";
 import axios from "axios";
 import calculateDistance from "@/app/lib/calculateDistance";
+import dbConnect from "@/app/lib/mongodb";
 import event from "../event.json";
+import Event from "@/app/models/event";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -19,8 +23,9 @@ export async function POST(request: Request) {
   const { location, distance } = await request.json();
 
   try {
-     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
+    // await dbConnect();
+    // const event = await Event.find(); 
+
     const promises =  (event as any).map(async (e: any, index: number) => {
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json`,
