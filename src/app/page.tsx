@@ -2,12 +2,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toast";
 import axios from "axios";
 import Autocomplete from "./components/AutoComplete";
 import Input from "./components/Input";
 
 export default function Home() {
-  // const [location, setLocation] = useState();
+
   const [distance, setDistance] = useState<string>();
   const [inputValue, setInputValue] = useState<string>();
   const [searchValue, setSearchValue] = useState<any>();
@@ -17,7 +18,6 @@ export default function Home() {
 
   const fetchCities = async () => {
     try {
-      console.log("ok");
       const response = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json`,
         {
@@ -41,16 +41,10 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    fetchCities();
-  }, [inputValue]);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const search = async() => {
     if(distance && searchValue){
-
       const payload = {
-        location: searchValue.geometry.location,
+        location: searchValue.formatted_address,
         distance: distance
       };
 
@@ -69,6 +63,28 @@ export default function Home() {
     }
   };
 
+  const save = async() => {
+    if(searchValue){
+      const payload = {
+        address: searchValue.formatted_address,
+      };
+
+      const response = await fetch("/api/events/create", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      if (response.status === 200) {
+        toast.success('successfully created!')
+      } else {
+        console.log("error");
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchCities();
+  }, [inputValue]);
+
   return (
     <main className="flex flex-col items-center p-10 gap-5">
       <h1>Hello, this is Event Search Endpoint Project.</h1>
@@ -78,7 +94,6 @@ export default function Home() {
           inputVal={inputValue}
           setInputValue={(v: string) => setInputValue(v)}
           value={searchValue}
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setValue={(item: any) => setSearchValue(item)}
         />
         <Input
@@ -94,6 +109,13 @@ export default function Home() {
           onClick={() => search()}
         >
           Search
+        </button>
+        <button
+          type="button"
+          className=" bg-stone-900 rounded-xl p-2 border border-gray-300 hover:bg-green-800"
+          onClick={() => save()}
+        >
+          Save
         </button>
       </div>
       <div>

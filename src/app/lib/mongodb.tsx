@@ -10,6 +10,7 @@ import mongoose from 'mongoose';
      if (mongoose.connection.readyState === 0) {
        await mongoose.connect(MONGODB_URI);
      }
+     console.log('successfully connected to mongo db');
      return mongoose.connection;
    }
 
