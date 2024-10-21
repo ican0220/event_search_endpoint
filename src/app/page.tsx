@@ -120,7 +120,7 @@ export default function Home() {
       </div>
       <div>
         {events.map((e: any, index: number) => (
-          <div key={index}><span>{index + 1}.</span>{e.full_name}</div>
+          <div key={index}><span>{index + 1}.</span>{e.entityId}</div>
         ))}
       </div>
     </main>

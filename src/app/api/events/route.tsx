@@ -5,8 +5,10 @@ import { NextResponse } from "next/server";
 import axios from "axios";
 import calculateDistance from "@/app/lib/calculateDistance";
 import event from "../event.json";
+import profileData from "../profileData.json";
 import dbConnect from "@/app/lib/mongodb";
 import Event from "@/app/models/event";
+import ProfileData from '@/app/models/profiledata';
 
 export async function POST(request: Request) {
   const { location, distance } = await request.json();
@@ -14,6 +16,7 @@ export async function POST(request: Request) {
   try {
     // await dbConnect();
     // const event = await Event.find();
+    //const profileData = await ProfileData.find();
 
     const response1 = await axios.get(
       `https://maps.googleapis.com/maps/api/geocode/json`,
@@ -24,16 +27,16 @@ export async function POST(request: Request) {
         },
       }
     );
-    
+    console.log(profileData,'ok')
     const location1 = response1.data.results[0].geometry.location;
 
-    const promises = (event as any).map(async (e: any, index: number) => {
+    const promises = (profileData as any).map(async (e: any, index: number) => {
       
       const response2 = await axios.get(
         `https://maps.googleapis.com/maps/api/geocode/json`,
         {
           params: {
-            address: e.biodata.location,
+            address: e.data.location,
             key: "AIzaSyD5SWtYvepl_a7bHPs9S2dUSCYVF6Whgmg",
           },
         }
