@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const coHostSchema = new mongoose.Schema({
   id: { type: String, required: true },
